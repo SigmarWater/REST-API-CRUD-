@@ -49,6 +49,21 @@ func updateUserHandler(w http.ResponseWriter, r *http.Request){
 	http.Error(w, "Пользователь не найден", http.StatusNotFound)
 }
 
+func deleteUserHandler(w http.ResponseWriter, r *http.Request){
+	params := mux.Vars(r)
+	id := params["id"]
+
+	for i, user := range users{
+		if id == user.ID{
+			users = append(users[:i], users[i + 1:]...)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+	}
+
+	http.Error(w, "Пользователь не найден", http.StatusNotFound)
+}
+
 func main() {
 
 }
