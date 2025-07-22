@@ -14,6 +14,15 @@ type User struct {
 	Email string `json:"email"`
 }
 
+type Response struct{
+	Message string `json:"message"`
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Response{Message: "Добро пожаловать в API"})
+}
+
 var users = []User{}
 
 func createUserHandler(w http.ResponseWriter, r *http.Request){
@@ -65,5 +74,13 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func main() {
+	r := mux.NewRouter()
 
+	r.HandleFunc("/", homeHandler).Methods("GET")
+	r.HandleFunc("/users", createUserHandler).Methods("POST")
+    r.HandleFunc("/users", getUsersHandler).Methods("GET")
+    r.HandleFunc("/users/{id}", updateUserHandler).Methods("PUT")
+    r.HandleFunc("/users/{id}", deleteUserHandler).Methods("DELETE")
+
+	http.ListenAndServe(":8080", r)
 }
