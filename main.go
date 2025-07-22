@@ -18,6 +18,14 @@ type Response struct{
 	Message string `json:"message"`
 }
 
+
+func loggingMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        fmt.Println("Запрос:", r.Method, r.URL.Path)
+        next.ServeHTTP(w, r)
+    })
+}
+
 func homeHandler(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(Response{Message: "Добро пожаловать в API"})
@@ -75,6 +83,8 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request){
 
 func main() {
 	r := mux.NewRouter()
+	r.Use(loggingMiddleware)
+
 
 	r.HandleFunc("/", homeHandler).Methods("GET")
 	r.HandleFunc("/users", createUserHandler).Methods("POST")
