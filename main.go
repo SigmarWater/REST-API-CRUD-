@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"net/http"
 	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type User struct {
@@ -31,6 +33,22 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(users)
 }
 
+func updateUserHandler(w http.ResponseWriter, r *http.Request){
+	params := mux.Vars(r)
+
+	id := params["id"]
+
+	for i, user := range users{
+		if user.ID == id{
+			json.NewDecoder(r.Body).Decode(&users[i])
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(users[i])
+			return
+		}
+	}
+	http.Error(w, "Пользователь не найден", http.StatusNotFound)
+}
+
 func main() {
-	
+
 }
